@@ -33,6 +33,8 @@ SIM_LAP_MS = 20_000
 SPEEDS = (20, 10, 5, 2, 1)
 DEFAULT_SECONDS_PER_LAP = 5.0
 INCIDENT_LAP = 24
+# Laps a driver will nurse a tyre fault before boxing on his own, whatever the pit wall says.
+DRIVER_LIMIT_LAPS = {"puncture": 4, "fl_overheat": 5}
 
 
 class _Restart(Exception):
@@ -378,16 +380,23 @@ class RaceEngine:
         for sc in list(self.active):
             if sc.expired(lap):
                 self._end_scenario(sc)
-        if (
-            self.pending_box is None
-            and hero.tire_age_laps + 1 > TIRE_MAX_LIFE[hero.tire_compound]
-            and lap < self.total_laps
-        ):
+        # The driver's own limits: worn-out tyres, or a tyre fault left alone too long.
+        failing = next(
+            (
+                sc
+                for sc in self.active
+                if sc.kind in DRIVER_LIMIT_LAPS and lap - sc.since_lap >= DRIVER_LIMIT_LAPS[sc.kind]
+            ),
+            None,
+        )
+        worn = hero.tire_age_laps + 1 > TIRE_MAX_LIFE[hero.tire_compound]
+        if self.pending_box is None and (worn or failing) and lap < self.total_laps:
             compound = default_compound(self.total_laps - lap)
             self.pending_box = _Box(compound, "tyre_life")
+            why = "the front-left can't take any more" if failing else "the tyres are finished"
             self._publish_event(
                 "box_call",
-                f"Driver: the tyres are finished, boxing for {compound.title()}s.",
+                f"Driver: {why}, boxing for {compound.title()}s.",
                 car_number=HERO_CAR,
                 compound=compound,
                 by="tyre_life",

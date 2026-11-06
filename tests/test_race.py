@@ -61,12 +61,13 @@ def test_safety_car_triggers_the_cheap_stop():
     assert race.anomaly_laps() == []  # slow, cool SC laps aren't anomalies
 
 
-def test_without_autopilot_the_car_ignores_pit_now_until_the_tyres_die():
+def test_without_autopilot_the_car_ignores_pit_now_until_the_driver_gives_up():
     race = run_race(laps=40, autopilot=False)
-    assert race.decisions[24]["suggestion"] == "PIT NOW"
-    assert not race.race_events("box_call") or race.race_events("box_call")[0]["data"]["by"] == "tyre_life"
+    assert all(race.decisions[lap]["suggestion"] == "PIT NOW" for lap in range(24, 29))
+    call = race.race_events("box_call")[0]
+    assert call["data"]["by"] == "tyre_life" and "front-left" in call["message"]
     assert race.hero_stops[0]["data"]["reason"] == "tyre_life"
-    assert race.hero_stops[0]["lap"] > 25
+    assert race.hero_stops[0]["lap"] == 29  # five laps of nursing the overheating tyre
 
 
 def test_engineer_box_pits_next_lap_on_the_chosen_compound():

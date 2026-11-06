@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BoxBox · AI pit wall</title>
+  <meta name="description" content="BoxBox is a real-time AI pit wall: a simulated 60-lap race streams through window, join and anomaly-detection operators, and an AI strategist calls STAY OUT, PIT SOON or PIT NOW every lap. The car obeys.">
+  <meta name="theme-color" content="#0a0c0f">
+  <meta name="color-scheme" content="dark">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="BoxBox">
+  <meta property="og:title" content="BoxBox · real-time AI pit wall">
+  <meta property="og:description" content="A streaming race simulator, live anomaly detection, and an AI strategist that decides when to pit. Watch a recorded race or run it live.">
+  <meta property="og:image" content="./img/og.png">
+  <meta property="og:image:alt" content="The BoxBox pit wall dashboard">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BoxBox · real-time AI pit wall">
+  <meta name="twitter:description" content="A streaming race simulator, live anomaly detection, and an AI strategist that decides when to pit.">
+  <meta name="twitter:image" content="./img/og.png">
+  <link rel="icon" href="./img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="./css/app.css">
+  <script type="module" src="./js/main.js"></script>
+  <link rel="modulepreload" href="./js/main.js">
+  <link rel="modulepreload" href="./js/analyst.js">
+  <link rel="modulepreload" href="./js/charts.js">
+  <link rel="modulepreload" href="./js/dock.js">
+  <link rel="modulepreload" href="./js/dom.js">
+  <link rel="modulepreload" href="./js/engineer.js">
+  <link rel="modulepreload" href="./js/format.js">
+  <link rel="modulepreload" href="./js/grid.js">
+  <link rel="modulepreload" href="./js/panels.js">
+  <link rel="modulepreload" href="./js/pipeline.js">
+  <link rel="modulepreload" href="./js/replaybar.js">
+  <link rel="modulepreload" href="./js/replaycore.js">
+  <link rel="modulepreload" href="./js/report.js">
+  <link rel="modulepreload" href="./js/sources.js">
+  <link rel="modulepreload" href="./js/store.js">
+  <link rel="modulepreload" href="./js/strategist.js">
+  <link rel="modulepreload" href="./js/synthetic.js">
+  <link rel="modulepreload" href="./js/timeline.js">
+  <link rel="modulepreload" href="./js/topbar.js">
+  <link rel="modulepreload" href="./js/tower.js">
+  <link rel="modulepreload" href="./js/trackmap.js">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the dashboard</a>
+
+  <header class="topbar">
+    <div class="tb-left">
+      <a class="brand" href="./" aria-label="BoxBox home">
+        <img class="brand-mark" src="./img/logo.svg" width="34" height="34" alt="">
+        <span class="wordmark" aria-hidden="true">BOX<b>BOX</b></span>
+      </a>
+      <span class="tb-tag">AI pit wall</span>
+      <label class="circuit-picker" data-tip="Track map only: pick any circuit (remembered)">
+        <span class="sr-only">Circuit</span>
+        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/></svg>
+        <select id="circuit-select" aria-label="Circuit shown on the track map"><option>Silverstone</option></select>
+      </label>
+    </div>
+    <div class="tb-center">
+      <div id="lapbox" class="lapbox" role="status" aria-label="Lap">
+        <span class="lap-label">LAP</span>
+        <span id="lap-now" class="lap-now">–</span>
+        <span class="lap-sep">/</span>
+        <span id="lap-total" class="lap-total">60</span>
+      </div>
+      <span id="flag-chip" class="flag-chip" data-flag="PRE" role="status"><i class="flag-ico" aria-hidden="true"></i><span id="flag-text">PRE-RACE</span></span>
+    </div>
+    <div class="tb-right">
+      <span id="mode-badge" class="badge mode-badge" tabindex="0">…</span>
+      <span id="brain-badge" class="badge brain-badge" tabindex="0"><i aria-hidden="true"></i><small>STRATEGIST</small><span id="brain-text">—</span></span>
+      <span id="conn" class="conn" tabindex="0" data-state="connecting"><i class="conn-dot" aria-hidden="true"></i><span id="conn-label">Connecting…</span></span>
+      <button id="btn-how" class="tb-btn" type="button" data-tip="How the pipeline works · H">How it works</button>
+      <button id="btn-engineer" class="tb-btn tb-btn-accent" type="button" aria-expanded="false" aria-controls="engineer" data-tip="Ask the race engineer · E">
+        <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>
+        <span>Engineer</span>
+      </button>
+      <button id="btn-keys" class="icon-btn" type="button" aria-label="Keyboard shortcuts" data-tip="Keyboard shortcuts · ?">
+        <svg class="icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h18v10H3zM7 10h.01M10 10h.01M13 10h.01M16 10h.01M7 14h10"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="replay-banner" class="replay-banner" hidden>
+    <span class="rb-dot" aria-hidden="true"></span>
+    <span><span id="replay-banner-text">Demo replay of a recorded race.</span> Run it live: <code>uv run boxbox</code></span>
+    <button id="banner-copy" class="btn btn-xs btn-ghost" type="button" aria-label="Copy the command uv run boxbox">
+      <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 9h11v11H9zM5 15H4V4h11v1"/></svg><span class="btn-txt">Copy</span>
+    </button>
+    <button id="banner-close" class="icon-btn icon-btn-sm" type="button" aria-label="Hide this banner">
+      <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+
+  <main id="main" class="layout" tabindex="-1">
+    <!-- Timing tower -->
+    <section id="panel-tower" class="panel tower" aria-labelledby="tower-title">
+      <header class="panel-head">
+        <h2 id="tower-title">Timing</h2>
+        <span id="tower-hero" class="panel-meta num"></span>
+      </header>
+      <div class="tower-cols" aria-hidden="true">
+        <span>POS</span><span></span><span>DRIVER</span><span>TYRE</span>
+        <button id="gap-toggle" class="gap-toggle" type="button" aria-hidden="false"><span id="gap-head">GAP</span><svg class="icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M7 10l5-5 5 5M7 14l5 5 5-5"/></svg></button>
+        <span title="Pit stops">PIT</span><span></span>
+      </div>
+      <div id="tower-body" class="tower-body" role="list" aria-label="Race order. Select a driver to track them on the map."></div>
+      <p id="tower-empty" class="empty">Waiting for the grid…</p>
+    </section>
+
+    <!-- Track map + race control -->
+    <section id="panel-map" class="panel mapwrap" aria-labelledby="map-title">
+      <header class="panel-head">
+        <h2 id="map-title">Track</h2>
+        <span class="panel-meta"><span id="circuit-name">Silverstone Circuit</span> <span id="circuit-len" class="muted num"></span></span>
+        <span id="sc-chip" class="sc-chip" hidden><b>SC</b> SAFETY CAR</span>
+        <span id="map-focus" class="map-focus" hidden>
+          <span>Tracking <b id="map-focus-name"></b></span>
+          <button id="map-clear-focus" class="icon-btn icon-btn-sm" type="button" aria-label="Stop tracking this driver">
+            <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+          </button>
+        </span>
+      </header>
+      <div id="map" class="map">
+        <div id="hud" class="hud is-empty" aria-label="Car 88 live readout">
+          <div class="hud-speed"><span id="hud-speed" class="num">–</span><small>KPH</small></div>
+          <div class="hud-bars">
+            <div class="hud-bar"><span>THR</span><i><b id="hud-throttle" class="thr"></b></i></div>
+            <div class="hud-bar"><span>BRK</span><i><b id="hud-brake" class="brk"></b></i></div>
+          </div>
+          <div class="hud-foot"><span id="hud-drs" class="drs" aria-label="DRS closed">DRS</span><span id="hud-lap" class="num muted"></span></div>
+        </div>
+        <div class="map-legend" aria-hidden="true"><span class="lg-hero"></span>#88 Kestrel Racing<span class="lg-sep"></span>Select a driver in the tower to track them</div>
+        <div id="idle-card" class="idle-card" hidden>
+          <img src="./img/logo.svg" width="54" height="54" alt="">
+          <h3>Your AI strategist is on the pit wall.</h3>
+          <p>Start a 60-lap race. Every lap, the strategist reads the car's telemetry window and calls the pit stop, live.</p>
+          <div class="idle-pace">
+            <span class="dock-label">Pace</span>
+            <div id="idle-pace" class="seg" role="radiogroup" aria-label="Pace for the next race"></div>
+          </div>
+          <button id="idle-start" class="btn btn-primary btn-lg" type="button">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>
+            Start race
+          </button>
+        </div>
+      </div>
+
+      <div id="dock" class="dock" role="toolbar" aria-label="Race control">
+        <div class="dock-group dock-race">
+          <button id="btn-start" class="btn btn-primary" type="button" hidden data-tip="Start a new race">
+            <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>Start race
+          </button>
+          <button id="btn-pause" class="btn" type="button"><span class="btn-ico" aria-hidden="true"></span><span class="btn-txt">Pause</span></button>
+          <button id="btn-restart" class="btn btn-ghost" type="button">
+            <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5"/></svg>Restart
+          </button>
+          <button id="btn-report" class="btn btn-ghost" type="button" hidden data-tip="Open the post-race report">Report</button>
+          <button id="btn-download" class="icon-btn" type="button" aria-label="Download session JSON" data-tip="Download this race as a session JSON">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+          </button>
+        </div>
+        <div class="dock-group dock-pace">
+          <span class="dock-label" id="pace-label">Pace</span>
+          <div id="pace-seg" class="seg" role="radiogroup" aria-labelledby="pace-label"></div>
+        </div>
+        <div class="dock-group dock-switches">
+          <button id="sw-autopilot" class="switch" type="button" role="switch" aria-checked="false">
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+            <span class="switch-text"><b>Autopilot</b><small>AI controls pit stops</small></span>
+          </button>
+          <button id="sw-scripted" class="switch" type="button" role="switch" aria-checked="false">
+            <span class="switch-track" aria-hidden="true"><span class="switch-thumb"></span></span>
+            <span class="switch-text"><b>Scripted L24 incident</b><small>FL overheat at lap 24</small></span>
+          </button>
+        </div>
+        <div class="dock-group dock-scenarios">
+          <span class="dock-label">Inject</span>
+          <div id="scenario-list" class="scenario-list"></div>
+        </div>
+        <div class="dock-group dock-box">
+          <button id="btn-box" class="btn btn-box" type="button" aria-haspopup="dialog" aria-expanded="false">
+            <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5.5a4 4 0 0 0 5 5l-9 9a2.1 2.1 0 0 1-3-3l9-9a4 4 0 0 0-2-2z"/></svg>
+            <span>BOX</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI strategist -->
+    <section id="panel-strategist" class="panel strategist" aria-labelledby="strat-title">
+      <header class="panel-head">
+        <h2 id="strat-title">AI Strategist</h2>
+        <span id="call-brain" class="brain-chip" tabindex="0">—</span>
+      </header>
+      <div id="call" class="call" data-call="none" aria-live="polite">
+        <div class="call-top"><span id="call-lap" class="call-lap">STANDING BY</span><span id="call-sub" class="call-sub"></span></div>
+        <div id="call-text" class="call-text">AWAITING CALL</div>
+        <div class="call-deliberating"><span class="delib-dots" aria-hidden="true"><i></i><i></i><i></i></span><span id="call-delib-text">Claude deliberating…</span></div>
+        <div class="call-glow" aria-hidden="true"></div>
+      </div>
+      <div id="call-rec" class="call-rec" hidden></div>
+      <dl class="call-facts">
+        <dt>Condition</dt><dd id="call-condition">—</dd>
+        <dt>Race</dt><dd id="call-context">—</dd>
+      </dl>
+      <details id="call-reasoning" class="call-reasoning" hidden>
+        <summary>Full reasoning</summary>
+        <div id="call-reasoning-body" class="rich"></div>
+      </details>
+      <div class="tabs" role="tablist" aria-label="Strategist feeds">
+        <button id="tab-decisions" class="tab" type="button" role="tab" aria-controls="pane-decisions">Decisions <span id="feed-count" class="tab-count num">0</span></button>
+        <button id="tab-log" class="tab" type="button" role="tab" aria-controls="pane-log">Race log <span id="log-count" class="tab-count num">0</span></button>
+      </div>
+      <div id="pane-decisions" class="feed-pane" role="tabpanel" aria-labelledby="tab-decisions">
+        <ol id="feed-decisions" class="feed" aria-label="Decisions, newest first"></ol>
+        <p class="empty">No calls yet. The first comes after lap 1's window closes.</p>
+      </div>
+      <div id="pane-log" class="feed-pane" role="tabpanel" aria-labelledby="tab-log" hidden>
+        <ol id="feed-log" class="feed log" aria-label="Race log, newest first"></ol>
+        <p class="empty">Race events appear here.</p>
+      </div>
+    </section>
+
+    <!-- Strategy timeline -->
+    <section id="panel-timeline" class="panel timeline" aria-labelledby="tl-title">
+      <header class="panel-head">
+        <h2 id="tl-title">Strategy timeline</h2>
+        <ul class="legend" aria-label="Legend">
+          <li><i class="lg-stay"></i>STAY OUT</li>
+          <li><i class="lg-soon"></i>PIT SOON</li>
+          <li><i class="lg-now"></i>PIT NOW</li>
+          <li><span class="lg-anom">▲</span>Anomaly</li>
+          <li><span class="lg-pit">P</span>Pit stop</li>
+          <li><i class="lg-sc"></i>Safety car</li>
+        </ul>
+      </header>
+      <div class="tl-scroll">
+        <div class="tl-inner">
+          <div id="tl-grid" class="tl-grid"><span id="tl-cursor" class="tl-cursor" hidden aria-hidden="true"></span></div>
+          <div id="tl-axis" class="tl-axis" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Anomaly detection -->
+    <section id="panel-anomaly" class="panel anomaly" aria-labelledby="anom-title">
+      <header class="panel-head">
+        <h2 id="anom-title">Anomaly detection</h2>
+        <span class="panel-meta muted">car_state · per-lap window vs learned band</span>
+        <span id="anom-chip" class="status-chip" data-kind="wait" tabindex="0">WAITING</span>
+      </header>
+      <div class="anom-readout">
+        <div><span class="ro-label">FL tyre now</span><span id="anom-now" class="ro-value num">—</span></div>
+        <div><span class="ro-label">Expected</span><span id="anom-exp" class="ro-value num">—</span></div>
+        <div><span class="ro-label">Band</span><span id="anom-band" class="ro-value num">—</span></div>
+        <div id="anom-dev-wrap"><span class="ro-label">Deviation</span><span id="anom-dev" class="ro-value num">—</span></div>
+      </div>
+      <div class="chart-title"><h3>Front-left tyre temperature <small>°C per lap window</small></h3>
+        <ul class="legend legend-chart" aria-label="Chart legend">
+          <li><i class="lc-actual"></i>window avg</li><li><i class="lc-expected"></i>expected</li><li><i class="lc-band"></i>band</li><li><i class="lc-anom"></i>anomaly</li><li><i class="lc-live"></i>live</li>
+        </ul>
+      </div>
+      <div id="chart-fl" class="chart-box chart-main"></div>
+      <div class="chart-pair">
+        <div>
+          <div class="chart-title"><h3>FL tyre pressure <small>psi</small></h3><span id="chip-press" class="status-chip status-chip-sm" data-kind="wait">—</span></div>
+          <div id="chart-press" class="chart-box"></div>
+        </div>
+        <div>
+          <div class="chart-title"><h3>Engine temperature <small>°C</small></h3><span id="chip-engine" class="status-chip status-chip-sm" data-kind="wait">—</span></div>
+          <div id="chart-engine" class="chart-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Car telemetry -->
+    <section id="panel-car" class="panel carpanel" aria-labelledby="car-title">
+      <header class="panel-head">
+        <h2 id="car-title">Car #88 telemetry</h2>
+        <span id="car-compound" class="panel-meta num">—</span>
+      </header>
+      <div class="car-layout">
+        <div id="car-figure" class="car-figure">
+          <p id="car-empty" class="empty empty-overlay">No telemetry yet</p>
+        </div>
+        <div class="car-metrics">
+          <div class="metric metric-big"><span class="m-label">Speed</span><span class="m-value"><b id="m-speed" class="num">—</b><small>kph</small></span></div>
+          <div class="metric"><span class="m-label">Throttle</span><span id="m-throttle" class="m-value num">—</span><i class="m-bar"><b id="m-throttle-bar" class="thr"></b></i></div>
+          <div class="metric"><span class="m-label">Brake</span><span id="m-brake" class="m-value num">—</span><i class="m-bar"><b id="m-brake-bar" class="brk"></b></i></div>
+          <div class="metric"><span class="m-label">Engine</span><span id="m-engine" class="m-value num">—</span><i class="m-bar"><b id="m-engine-bar"></b></i></div>
+          <div class="metric"><span class="m-label">Fuel</span><span id="m-fuel" class="m-value num">—</span><i class="m-bar"><b id="m-fuel-bar" class="fuel"></b></i></div>
+          <div class="metric"><span class="m-label">Battery</span><span id="m-batt" class="m-value num">—</span><i class="m-bar"><b id="m-batt-bar" class="batt"></b></i></div>
+          <div class="metric metric-row"><span class="m-label">Brakes F</span><span class="m-value num"><b id="m-brake-fl">—</b> <small>L</small> · <b id="m-brake-fr">—</b> <small>R</small></span></div>
+          <div class="metric metric-row"><span id="m-drs" class="drs">DRS</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Position chart -->
+    <section id="panel-positions" class="panel positions" aria-labelledby="pos-title">
+      <header class="panel-head">
+        <h2 id="pos-title">Position</h2>
+        <span class="panel-meta muted">#88 per lap · rivals faint</span>
+      </header>
+      <div id="chart-positions" class="chart-box"></div>
+    </section>
+
+    <!-- Pipeline -->
+    <section id="panel-pipeline" class="panel pipeline" aria-labelledby="pipe-title">
+      <header class="panel-head">
+        <h2 id="pipe-title">Live pipeline</h2>
+        <span class="panel-meta muted">records per topic · rate</span>
+        <button id="btn-how-2" class="btn btn-xs btn-ghost" type="button">How it works</button>
+      </header>
+      <div id="pipeline-strip" class="pipeline-strip"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>BoxBox · fictional teams and drivers · circuit maps from bacinger/f1-circuits (MIT)</span>
+    <span class="muted">Press <kbd>?</kbd> for shortcuts</span>
+  </footer>
+
+  <!-- Replay bar (replay mode only) -->
+  <div id="replaybar" class="replaybar" hidden role="region" aria-label="Replay controls">
+    <button id="rb-play" class="rb-play" type="button" aria-label="Play replay"></button>
+    <div id="rb-speed" class="seg seg-sm" role="radiogroup" aria-label="Replay speed"></div>
+    <div class="rb-scrub">
+      <div class="rb-track" aria-hidden="true">
+        <div id="rb-fill" class="rb-fill"></div>
+        <div id="rb-ticks" class="rb-ticks"></div>
+      </div>
+      <input id="rb-range" class="rb-range" type="range" min="0" max="1000" value="0" aria-label="Seek through the replay">
+      <div id="rb-markers" class="rb-markers"></div>
+    </div>
+    <span id="rb-lap" class="rb-lap num">L0/60</span>
+    <span id="rb-time" class="rb-time num">0:00 / 0:00</span>
+    <button id="rb-link" class="btn btn-xs btn-ghost" type="button" data-tip="Copy a link that opens the replay at this lap">
+      <svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+      <span>Copy link to this moment</span>
+    </button>
+  </div>
+
+  <!-- Race engineer drawer -->
+  <div id="engineer-backdrop" class="drawer-backdrop" hidden></div>
+  <aside id="engineer" class="drawer" role="dialog" aria-modal="true" aria-labelledby="eng-title" hidden>
+    <header class="drawer-head">
+      <div>
+        <h2 id="eng-title">Race engineer</h2>
+        <p id="eng-provider" class="drawer-sub">Answers from the race data</p>
+      </div>
+      <button id="eng-clear" class="btn btn-xs btn-ghost" type="button">Clear</button>
+      <button id="eng-close" class="icon-btn" type="button" aria-label="Close the race engineer">
+        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <div id="eng-log" class="eng-log" role="log" aria-live="polite" aria-label="Conversation"></div>
+    <div id="eng-chips" class="eng-chips" aria-label="Suggested questions"></div>
+    <form id="eng-form" class="eng-form">
+      <label for="eng-input" class="sr-only">Ask the race engineer</label>
+      <textarea id="eng-input" rows="1" placeholder="Ask your race engineer…" autocomplete="off"></textarea>
+      <button id="eng-send" class="btn btn-primary btn-send" type="submit" aria-label="Send question">
+        <svg class="icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l16-8-6 16-2.5-6.5z"/></svg>
+      </button>
+      <p class="eng-hint">Enter to send · Shift+Enter for a new line</p>
+    </form>
+  </aside>
+
+  <!-- BOX, BOX radio overlay -->
+  <div id="boxbox" class="boxbox" hidden role="alert" aria-labelledby="bb-title">
+    <div class="bb-card">
+      <div id="bb-who" class="bb-who">TEAM RADIO</div>
+      <div class="bb-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <h2 id="bb-title" class="bb-title">BOX, BOX</h2>
+      <p id="bb-sub" class="bb-sub">PIT NOW</p>
+      <p id="bb-reason" class="bb-reason"></p>
+      <button id="bb-dismiss" class="bb-dismiss btn btn-xs btn-ghost" type="button">Dismiss · Esc</button>
+    </div>
+  </div>
+
+  <div id="boot-error" class="boot-error" hidden role="alert">
+    <strong>BoxBox couldn't start.</strong> <span id="boot-error-msg"></span>
+  </div>
+  <div id="toasts" class="toasts" aria-live="polite" aria-relevant="additions"></div>
+  <div id="modal-root"></div>
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+  <noscript><div class="noscript">BoxBox needs JavaScript to render the race.</div></noscript>
+</body>
+</html>
