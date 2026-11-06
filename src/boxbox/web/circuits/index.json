@@ -1,0 +1,246 @@
+{
+ "default": "silverstone",
+ "source": "https://github.com/bacinger/f1-circuits (MIT)",
+ "circuits": [
+  {
+   "key": "abu_dhabi",
+   "label": "Abu Dhabi",
+   "name": "Yas Marina Circuit",
+   "length_m": 5281
+  },
+  {
+   "key": "austin",
+   "label": "Austin",
+   "name": "Circuit of the Americas",
+   "length_m": 5514
+  },
+  {
+   "key": "baku",
+   "label": "Baku",
+   "name": "Baku City Circuit",
+   "length_m": 6003
+  },
+  {
+   "key": "barcelona",
+   "label": "Barcelona",
+   "name": "Circuit de Barcelona-Catalunya",
+   "length_m": 4655
+  },
+  {
+   "key": "budapest",
+   "label": "Budapest",
+   "name": "Hungaroring",
+   "length_m": 4381
+  },
+  {
+   "key": "buenos_aires",
+   "label": "Buenos Aires",
+   "name": "Aut\u00f3dromo Oscar y Juan G\u00e1lvez",
+   "length_m": 4322
+  },
+  {
+   "key": "estoril",
+   "label": "Estoril",
+   "name": "Aut\u00f3dromo do Estoril",
+   "length_m": 4349
+  },
+  {
+   "key": "hockenheim",
+   "label": "Hockenheim",
+   "name": "Hockenheimring",
+   "length_m": 4574
+  },
+  {
+   "key": "imola",
+   "label": "Imola",
+   "name": "Autodromo Enzo e Dino Ferrari",
+   "length_m": 4909
+  },
+  {
+   "key": "indianapolis",
+   "label": "Indianapolis",
+   "name": "Indianapolis Motor Speedway",
+   "length_m": 4192
+  },
+  {
+   "key": "istanbul",
+   "label": "Istanbul",
+   "name": "Intercity Istanbul Park",
+   "length_m": 5338
+  },
+  {
+   "key": "jacarepagua",
+   "label": "Jacarepagu\u00e1",
+   "name": "Aut\u00f3dromo Internacional Nelson Piquet",
+   "length_m": 5031
+  },
+  {
+   "key": "jeddah",
+   "label": "Jeddah",
+   "name": "Jeddah Corniche Circuit",
+   "length_m": 6175
+  },
+  {
+   "key": "kyalami",
+   "label": "Kyalami",
+   "name": "Kyalami Grand Prix Circuit",
+   "length_m": 4529
+  },
+  {
+   "key": "las_vegas",
+   "label": "Las Vegas",
+   "name": "Las Vegas Street Circuit",
+   "length_m": 6201
+  },
+  {
+   "key": "lusail",
+   "label": "Lusail",
+   "name": "Losail International Circuit",
+   "length_m": 5380
+  },
+  {
+   "key": "madrid",
+   "label": "Madrid",
+   "name": "Circuito de Madring",
+   "length_m": 5474
+  },
+  {
+   "key": "magny_cours",
+   "label": "Magny-Cours",
+   "name": "Circuit de Nevers Magny-Cours",
+   "length_m": 4412
+  },
+  {
+   "key": "melbourne",
+   "label": "Melbourne",
+   "name": "Albert Park Circuit",
+   "length_m": 5278
+  },
+  {
+   "key": "mexico_city",
+   "label": "Mexico City",
+   "name": "Aut\u00f3dromo Hermanos Rodr\u00edguez",
+   "length_m": 4304
+  },
+  {
+   "key": "miami",
+   "label": "Miami",
+   "name": "Miami International Autodrome",
+   "length_m": 5412
+  },
+  {
+   "key": "monaco",
+   "label": "Monaco",
+   "name": "Circuit de Monaco",
+   "length_m": 3337
+  },
+  {
+   "key": "montreal",
+   "label": "Montreal",
+   "name": "Circuit Gilles-Villeneuve",
+   "length_m": 4361
+  },
+  {
+   "key": "monza",
+   "label": "Monza",
+   "name": "Autodromo Nazionale Monza",
+   "length_m": 5793
+  },
+  {
+   "key": "mugello",
+   "label": "Mugello",
+   "name": "Autodromo Internazionale del Mugello",
+   "length_m": 5245
+  },
+  {
+   "key": "nurburgring",
+   "label": "N\u00fcrburgring",
+   "name": "N\u00fcrburgring",
+   "length_m": 5148
+  },
+  {
+   "key": "paul_ricard",
+   "label": "Paul Ricard",
+   "name": "Circuit Paul Ricard",
+   "length_m": 5842
+  },
+  {
+   "key": "portimao",
+   "label": "Portim\u00e3o",
+   "name": "Aut\u00f3dromo Internacional do Algarve",
+   "length_m": 4653
+  },
+  {
+   "key": "sakhir",
+   "label": "Sakhir",
+   "name": "Bahrain International Circuit",
+   "length_m": 5412
+  },
+  {
+   "key": "sao_paulo",
+   "label": "S\u00e3o Paulo",
+   "name": "Aut\u00f3dromo Jos\u00e9 Carlos Pace - Interlagos",
+   "length_m": 4309
+  },
+  {
+   "key": "sepang",
+   "label": "Sepang",
+   "name": "Sepang International Circuit",
+   "length_m": 5543
+  },
+  {
+   "key": "shanghai",
+   "label": "Shanghai",
+   "name": "Shanghai International Circuit",
+   "length_m": 5451
+  },
+  {
+   "key": "silverstone",
+   "label": "Silverstone",
+   "name": "Silverstone Circuit",
+   "length_m": 5891
+  },
+  {
+   "key": "singapore",
+   "label": "Singapore",
+   "name": "Marina Bay Street Circuit",
+   "length_m": 4928
+  },
+  {
+   "key": "sochi",
+   "label": "Sochi",
+   "name": "Sochi Autodrom",
+   "length_m": 5848
+  },
+  {
+   "key": "spa_francorchamps",
+   "label": "Spa-Francorchamps",
+   "name": "Circuit de Spa-Francorchamps",
+   "length_m": 7004
+  },
+  {
+   "key": "spielberg",
+   "label": "Spielberg",
+   "name": "Red Bull Ring",
+   "length_m": 4318
+  },
+  {
+   "key": "suzuka",
+   "label": "Suzuka",
+   "name": "Suzuka International Racing Course",
+   "length_m": 5807
+  },
+  {
+   "key": "watkins_glen",
+   "label": "Watkins Glen",
+   "name": "Watkins Glen International",
+   "length_m": 5430
+  },
+  {
+   "key": "zandvoort",
+   "label": "Zandvoort",
+   "name": "Circuit Zandvoort",
+   "length_m": 4259
+  }
+ ]
+}

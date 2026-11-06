@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: uv sync --locked --extra mcp
+      - name: Lint
+        run: uv run ruff check src tests && uv run ruff format --check src tests
+      - name: Backend tests
+        run: uv run pytest
+      - name: Web app self-test
+        run: node src/boxbox/web/js/selftest.mjs
