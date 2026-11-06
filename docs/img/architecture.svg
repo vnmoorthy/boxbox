@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" font-family="Inter, -apple-system, Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b1016"/>
+      <stop offset="1" stop-color="#070a0e"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#12e3a5"/>
+      <stop offset="1" stop-color="#0fb6e8"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5b6b7d"/>
+    </marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#12e3a5"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#ff3b5c"/>
+    </marker>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <style>
+      .box { fill: #111a24; stroke: #243445; stroke-width: 1.5; }
+      .hero { fill: #0f1d1c; stroke: #12e3a5; stroke-width: 1.5; }
+      .title { fill: #e8eef5; font-size: 17px; font-weight: 700; }
+      .sub { fill: #8b98a8; font-size: 12.5px; }
+      .mono { font-family: "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace; }
+      .pill { fill: #0d141c; stroke: #2d4256; stroke-width: 1.2; }
+      .pilltext { fill: #b9c6d4; font-size: 12px; }
+      .edge { stroke: #5b6b7d; stroke-width: 1.8; fill: none; }
+      .label { fill: #8b98a8; font-size: 11.5px; }
+      .tag { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <text x="40" y="52" fill="#e8eef5" font-size="26" font-weight="800">BoxBox architecture</text>
+  <text x="40" y="78" class="sub" font-size="14">Every stage is an independent consumer on a topic bus. Same code in one process or over Kafka / Redpanda.</text>
+
+  <!-- topic bus band -->
+  <rect x="40" y="300" width="1200" height="64" rx="14" fill="#0c131b" stroke="#1d2b3a" stroke-dasharray="5 5"/>
+  <text x="58" y="322" class="tag" fill="#5b6b7d">TOPIC BUS</text>
+  <text x="58" y="340" class="label">in-memory (default)</text>
+  <text x="58" y="354" class="label">or Kafka / Redpanda</text>
+
+  <!-- topic pills on the bus -->
+  <g class="mono">
+    <rect x="206" y="316" width="128" height="32" rx="16" class="pill"/>
+    <text x="270" y="337" text-anchor="middle" class="pilltext">car_telemetry</text>
+    <rect x="342" y="316" width="136" height="32" rx="16" class="pill"/>
+    <text x="410" y="337" text-anchor="middle" class="pilltext">race_standings</text>
+    <rect x="560" y="316" width="104" height="32" rx="16" class="pill"/>
+    <text x="612" y="337" text-anchor="middle" class="pilltext">car_state</text>
+    <rect x="800" y="316" width="128" height="32" rx="16" class="pill" stroke="#12e3a5"/>
+    <text x="864" y="337" text-anchor="middle" class="pilltext" fill="#12e3a5">pit_decisions</text>
+    <rect x="950" y="316" width="118" height="32" rx="16" class="pill"/>
+    <text x="1009" y="337" text-anchor="middle" class="pilltext">race_events</text>
+    <rect x="1090" y="316" width="128" height="32" rx="16" class="pill"/>
+    <text x="1154" y="337" text-anchor="middle" class="pilltext">race_control</text>
+  </g>
+
+  <!-- stage: simulator -->
+  <rect x="40" y="128" width="260" height="128" rx="16" class="box"/>
+  <text x="62" y="160" class="tag" fill="#5b6b7d">STAGE 1</text>
+  <text x="62" y="184" class="title">Race simulator</text>
+  <text x="62" y="206" class="sub">22 cars · tyre wear with a cliff</text>
+  <text x="62" y="224" class="sub">10 sensor readings per lap</text>
+  <text x="62" y="242" class="sub">incidents: overheat, puncture, SC</text>
+
+  <!-- stage: car_state -->
+  <rect x="360" y="128" width="270" height="128" rx="16" class="box"/>
+  <text x="382" y="160" class="tag" fill="#5b6b7d">STAGE 2 · car_state</text>
+  <text x="382" y="184" class="title">Window · join · detect</text>
+  <text x="382" y="206" class="sub">20 s tumbling windows (1 lap)</text>
+  <text x="382" y="224" class="sub">as-of join with standings</text>
+  <text x="382" y="242" class="sub">trend detector, 99.99% band</text>
+
+  <!-- stage: strategist -->
+  <rect x="690" y="128" width="290" height="128" rx="16" class="hero" filter="url(#glow)"/>
+  <text x="712" y="160" class="tag" fill="#12e3a5">STAGE 3 · pit_strategy_agent</text>
+  <text x="712" y="184" class="title">AI strategist</text>
+  <text x="712" y="206" class="sub">Claude on the laps that matter,</text>
+  <text x="712" y="224" class="sub">rules engine on routine laps</text>
+  <text x="712" y="242" class="sub">STAY OUT · PIT SOON · PIT NOW</text>
+
+  <!-- stage: autopilot -->
+  <rect x="1040" y="128" width="200" height="128" rx="16" class="box" stroke="#ff3b5c"/>
+  <text x="1062" y="160" class="tag" fill="#ff3b5c">CLOSED LOOP</text>
+  <text x="1062" y="184" class="title">Autopilot</text>
+  <text x="1062" y="206" class="sub">PIT NOW boxes the car</text>
+  <text x="1062" y="224" class="sub">at the start of the next lap</text>
+  <text x="1062" y="242" class="sub">on the recommended tyre</text>
+
+  <!-- stage -> bus edges -->
+  <path class="edge" d="M170 256 V316" marker-end="url(#arrow)"/>
+  <path class="edge" d="M300 300 C 330 270, 380 280, 420 256" marker-end="url(#arrow)"/>
+  <path class="edge" d="M560 256 V 316" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640 316 C 660 280, 700 280, 740 256" marker-end="url(#arrow)"/>
+  <path class="edge" d="M864 256 V316" marker-end="url(#arrowTeal)" stroke="#12e3a5"/>
+  <path class="edge" d="M928 316 C 980 280, 1040 290, 1090 256" marker-end="url(#arrowTeal)" stroke="#12e3a5"/>
+  <!-- closed loop back to the simulator -->
+  <path d="M1140 128 C 1140 96, 1100 96, 1060 96 L 220 96 C 180 96, 170 108, 170 128" fill="none" stroke="#ff3b5c" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrowRed)"/>
+  <text x="640" y="90" text-anchor="middle" class="label" fill="#ff8a9e">box call → pit stop next lap</text>
+
+  <!-- serving layer -->
+  <rect x="40" y="420" width="420" height="140" rx="16" class="box"/>
+  <text x="62" y="452" class="tag" fill="#5b6b7d">STAGE 4 · LIVE VIEWS</text>
+  <text x="62" y="476" class="title">Event log + materialized views</text>
+  <text x="62" y="498" class="sub">every record of the race, numbered and replayable</text>
+  <text x="62" y="516" class="sub">latest telemetry, standings, car_state, decisions</text>
+  <text x="62" y="534" class="sub">REST: /api/status · /api/query · /api/session</text>
+  <path class="edge" d="M250 364 V420" marker-end="url(#arrow)"/>
+
+  <rect x="520" y="420" width="230" height="140" rx="16" class="box"/>
+  <text x="542" y="452" class="tag" fill="#5b6b7d">WEB APP</text>
+  <text x="542" y="476" class="title">Pit wall dashboard</text>
+  <text x="542" y="498" class="sub">live over WebSocket</text>
+  <text x="542" y="516" class="sub">race control + incidents</text>
+  <text x="542" y="534" class="sub">replays recorded races</text>
+
+  <rect x="780" y="420" width="220" height="140" rx="16" class="box"/>
+  <text x="802" y="452" class="tag" fill="#5b6b7d">CHAT</text>
+  <text x="802" y="476" class="title">Race engineer</text>
+  <text x="802" y="498" class="sub">Claude with the whole</text>
+  <text x="802" y="516" class="sub">race as context; built-in</text>
+  <text x="802" y="534" class="sub">analyst offline</text>
+
+  <rect x="1030" y="420" width="210" height="140" rx="16" class="box"/>
+  <text x="1052" y="452" class="tag" fill="#5b6b7d">MCP</text>
+  <text x="1052" y="476" class="title">MCP server</text>
+  <text x="1052" y="498" class="sub">7 tools for Claude Code</text>
+  <text x="1052" y="516" class="sub">and any MCP client</text>
+  <text x="1052" y="534" class="sub">to query the live race</text>
+
+  <path class="edge" d="M460 490 H520" marker-end="url(#arrow)"/>
+  <path class="edge" d="M750 490 H780" marker-end="url(#arrow)"/>
+  <path class="edge" d="M1000 490 H1030" marker-end="url(#arrow)"/>
+  <!-- control path -->
+  <path d="M635 420 C 700 390, 1100 400, 1154 348" fill="none" stroke="#5b6b7d" stroke-width="1.6" stroke-dasharray="4 5" marker-end="url(#arrow)"/>
+  <text x="905" y="404" text-anchor="middle" class="label">start · pause · pace · incidents · box</text>
+
+  <!-- footer -->
+  <text x="40" y="620" class="label" font-size="13">Data contract: docs/protocol.md · Lap = 20 s of simulation time at any playback pace · Strategist latency is measured from window close to decision.</text>
+  <rect x="40" y="648" width="1200" height="1" fill="#1d2b3a"/>
+  <text x="40" y="684" fill="url(#teal)" font-size="15" font-weight="700">boxbox</text>
+  <text x="102" y="684" class="label" font-size="13">real-time AI pit wall</text>
+</svg>

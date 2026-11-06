@@ -1,7 +1,7 @@
 """Kafka-compatible broker bus (Apache Kafka, Redpanda, ...).
 
 Records are JSON. Every subscriber gets its own consumer group, so each process sees
-every record on its topics (the stages are independent consumers, like Flink jobs).
+every record on its topics (the stages are independent stream-processing jobs).
 Topics are created on startup with one partition, which keeps per-topic order.
 """
 
